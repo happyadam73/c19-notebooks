@@ -1,3 +1,5 @@
 uk-covid19
 pandas
 PyWaffle
+seaborn
+plotly
