@@ -1,6 +1,10 @@
 {
 	"name": "COVID 19 Data Viz using Azure Synapse - Part 1 - Extract and Load the Data",
 	"properties": {
+		"bigDataPool": {
+			"referenceName": "spkruntime31",
+			"type": "BigDataPoolReference"
+		},
 		"sessionProperties": {
 			"driverMemory": "28g",
 			"driverCores": 4,
@@ -21,6 +25,20 @@
 			},
 			"language_info": {
 				"name": "python"
+			},
+			"a365ComputeOptions": {
+				"id": "/subscriptions/55536dc5-9813-4408-94ca-828f31382219/resourceGroups/rg-synapse-dev-uks-1/providers/Microsoft.Synapse/workspaces/ws-synapse-dev-uks-1/bigDataPools/spkruntime31",
+				"name": "spkruntime31",
+				"type": "Spark",
+				"endpoint": "https://ws-synapse-dev-uks-1.dev.azuresynapse.net/livyApi/versions/2019-11-01-preview/sparkPools/spkruntime31",
+				"auth": {
+					"type": "AAD",
+					"authResource": "https://dev.azuresynapse.net"
+				},
+				"sparkVersion": "3.1",
+				"nodeCount": 3,
+				"cores": 4,
+				"memory": 28
 			},
 			"sessionKeepAliveTimeout": 30
 		},
