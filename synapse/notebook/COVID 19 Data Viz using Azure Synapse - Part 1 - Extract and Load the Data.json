@@ -80,7 +80,7 @@
 					"from datetime import datetime    # Datetime functionality\n",
 					"import re                        # Regular Expression for the snake_case function"
 				],
-				"execution_count": null
+				"execution_count": 1
 			},
 			{
 				"cell_type": "markdown",
@@ -107,7 +107,7 @@
 					"\n",
 					"    return re.sub(\"([a-z0-9])([A-Z])\", r\"\\1_\\2\", name).lower().replace(\" \",\"_\").replace(\"-\",\"_\").replace(\"__\",\"_\").replace(\"__\",\"_\").replace(\"deaths28\",\"deaths_28\")   "
 				],
-				"execution_count": null
+				"execution_count": 2
 			},
 			{
 				"cell_type": "markdown",
@@ -169,7 +169,7 @@
 					"    ]    \n",
 					"}"
 				],
-				"execution_count": null
+				"execution_count": 3
 			},
 			{
 				"cell_type": "markdown",
@@ -239,7 +239,7 @@
 					"    spark_df = spark.createDataFrame(df_merged)\n",
 					"    spark_df.write.mode(\"overwrite\").saveAsTable(f\"c19.{key}\")"
 				],
-				"execution_count": null
+				"execution_count": 4
 			},
 			{
 				"cell_type": "markdown",
@@ -268,7 +268,7 @@
 					"# preview the data\n",
 					"display(df_populations)"
 				],
-				"execution_count": null
+				"execution_count": 5
 			},
 			{
 				"cell_type": "markdown",
@@ -309,7 +309,7 @@
 					"# preview the data\r\n",
 					"display(df_ltla_mappings)"
 				],
-				"execution_count": null
+				"execution_count": 6
 			},
 			{
 				"cell_type": "markdown",
@@ -382,7 +382,7 @@
 					"# preview the data\n",
 					"display(df_cases_by_age)"
 				],
-				"execution_count": null
+				"execution_count": 7
 			},
 			{
 				"cell_type": "markdown",
@@ -422,7 +422,7 @@
 					"\n",
 					"display(df)"
 				],
-				"execution_count": 2
+				"execution_count": 8
 			}
 		]
 	}
