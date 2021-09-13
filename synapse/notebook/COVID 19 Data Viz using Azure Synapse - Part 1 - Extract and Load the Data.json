@@ -67,7 +67,10 @@
 					"\n",
 					"Install the library using `pip install uk-covid19` - in Synapse you may want to either add this as a workspace package, or install as a session configuration via an environment.yml file.  Currently this notebook has been tested on version 1.2.2.\n",
 					"\n",
-					"For more information on the SDK, see: https://pypi.org/project/uk-covid19/"
+					"For more information on the SDK, see: https://pypi.org/project/uk-covid19/\n",
+					"\n",
+					"> **IMPORTANT**: The uk-covid19 requires a minimum Python version of 3.7 which means the standard runtime (v2.4) will not load this library (Python 3.6)  \n",
+					"You need to configure your cluster to use the v3.1 Spark Runtime which provides Python v3.8. "
 				]
 			},
 			{
