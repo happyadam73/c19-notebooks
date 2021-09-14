@@ -87,6 +87,10 @@
 			"type": "Microsoft.Synapse/workspaces/notebooks",
 			"apiVersion": "2019-06-01-preview",
 			"properties": {
+				"bigDataPool": {
+					"referenceName": "spkruntime31",
+					"type": "BigDataPoolReference"
+				},
 				"sessionProperties": {
 					"driverMemory": "28g",
 					"driverCores": 4,
@@ -107,6 +111,20 @@
 					},
 					"language_info": {
 						"name": "python"
+					},
+					"a365ComputeOptions": {
+						"id": "/subscriptions/55536dc5-9813-4408-94ca-828f31382219/resourceGroups/rg-synapse-dev-uks-1/providers/Microsoft.Synapse/workspaces/ws-synapse-dev-uks-1/bigDataPools/spkruntime31",
+						"name": "spkruntime31",
+						"type": "Spark",
+						"endpoint": "https://ws-synapse-dev-uks-1.dev.azuresynapse.net/livyApi/versions/2019-11-01-preview/sparkPools/spkruntime31",
+						"auth": {
+							"type": "AAD",
+							"authResource": "https://dev.azuresynapse.net"
+						},
+						"sparkVersion": "3.1",
+						"nodeCount": 3,
+						"cores": 4,
+						"memory": 28
 					},
 					"sessionKeepAliveTimeout": 30
 				},
@@ -137,7 +155,10 @@
 							"\n",
 							"Install the library using `pip install uk-covid19` - in Synapse you may want to either add this as a workspace package, or install as a session configuration via an environment.yml file.  Currently this notebook has been tested on version 1.2.2.\n",
 							"\n",
-							"For more information on the SDK, see: https://pypi.org/project/uk-covid19/"
+							"For more information on the SDK, see: https://pypi.org/project/uk-covid19/\n",
+							"\n",
+							"> **IMPORTANT**: The uk-covid19 requires a minimum Python version of 3.7 which means the standard runtime (v2.4) will not load this library (Python 3.6)  \n",
+							"You need to configure your cluster to use the v3.1 Spark Runtime which provides Python v3.8. "
 						]
 					},
 					{
@@ -152,7 +173,7 @@
 							"import re                        # Regular Expression for the snake_case function"
 						],
 						"outputs": [],
-						"execution_count": null
+						"execution_count": 1
 					},
 					{
 						"cell_type": "markdown",
@@ -182,7 +203,7 @@
 							"    return re.sub(\"([a-z0-9])([A-Z])\", r\"\\1_\\2\", name).lower().replace(\" \",\"_\").replace(\"-\",\"_\").replace(\"__\",\"_\").replace(\"__\",\"_\").replace(\"deaths28\",\"deaths_28\")   "
 						],
 						"outputs": [],
-						"execution_count": null
+						"execution_count": 2
 					},
 					{
 						"cell_type": "markdown",
@@ -247,7 +268,7 @@
 							"}"
 						],
 						"outputs": [],
-						"execution_count": null
+						"execution_count": 3
 					},
 					{
 						"cell_type": "markdown",
@@ -320,7 +341,7 @@
 							"    spark_df.write.mode(\"overwrite\").saveAsTable(f\"c19.{key}\")"
 						],
 						"outputs": [],
-						"execution_count": null
+						"execution_count": 4
 					},
 					{
 						"cell_type": "markdown",
@@ -351,7 +372,7 @@
 							"display(df_populations)"
 						],
 						"outputs": [],
-						"execution_count": null
+						"execution_count": 5
 					},
 					{
 						"cell_type": "markdown",
@@ -393,7 +414,7 @@
 							"display(df_ltla_mappings)"
 						],
 						"outputs": [],
-						"execution_count": null
+						"execution_count": 6
 					},
 					{
 						"cell_type": "markdown",
@@ -467,7 +488,7 @@
 							"display(df_cases_by_age)"
 						],
 						"outputs": [],
-						"execution_count": null
+						"execution_count": 7
 					},
 					{
 						"cell_type": "markdown",
@@ -509,7 +530,853 @@
 							"display(df)"
 						],
 						"outputs": [],
-						"execution_count": 2
+						"execution_count": 8
+					}
+				]
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('workspaceName'), '/COVID 19 Data Viz using Azure Synapse - Part 2 - Visualise the Data')]",
+			"type": "Microsoft.Synapse/workspaces/notebooks",
+			"apiVersion": "2019-06-01-preview",
+			"properties": {
+				"bigDataPool": {
+					"referenceName": "spkruntime31",
+					"type": "BigDataPoolReference"
+				},
+				"sessionProperties": {
+					"driverMemory": "28g",
+					"driverCores": 4,
+					"executorMemory": "28g",
+					"executorCores": 4,
+					"numExecutors": 2,
+					"conf": {
+						"spark.dynamicAllocation.enabled": "false",
+						"spark.dynamicAllocation.minExecutors": "2",
+						"spark.dynamicAllocation.maxExecutors": "2"
+					}
+				},
+				"metadata": {
+					"saveOutput": true,
+					"kernelspec": {
+						"name": "synapse_pyspark",
+						"display_name": "Synapse PySpark"
+					},
+					"language_info": {
+						"name": "python"
+					},
+					"a365ComputeOptions": {
+						"id": "/subscriptions/55536dc5-9813-4408-94ca-828f31382219/resourceGroups/rg-synapse-dev-uks-1/providers/Microsoft.Synapse/workspaces/ws-synapse-dev-uks-1/bigDataPools/spkruntime31",
+						"name": "spkruntime31",
+						"type": "Spark",
+						"endpoint": "https://ws-synapse-dev-uks-1.dev.azuresynapse.net/livyApi/versions/2019-11-01-preview/sparkPools/spkruntime31",
+						"auth": {
+							"type": "AAD",
+							"authResource": "https://dev.azuresynapse.net"
+						},
+						"sparkVersion": "3.1",
+						"nodeCount": 3,
+						"cores": 4,
+						"memory": 28
+					},
+					"sessionKeepAliveTimeout": 30
+				},
+				"cells": [
+					{
+						"cell_type": "markdown",
+						"metadata": {},
+						"source": [
+							"# Data Visualisation of COVID-19 in the UK using Azure Synapse and Seaborn Libraries \n",
+							"## Part 2: Visualise the Data\n",
+							"\n",
+							"This notebook explores the UK Gov's COVID-19 dashboard data.  \n",
+							"\n",
+							"The dashboard data is made up of several tables which consist of different metrics (such as positive cases, deaths and hospital admissions) broken down at different geographical levels - \n",
+							"some metrics are available at lower or upper tier local authority (LTLA/UTLA), some at Region and NHS Region and some nationally or overall within the UK. \n",
+							"\n",
+							"We will explore several of these tables to produce queries and visualisations of various metrics at different geography levels.  \n",
+							"\n",
+							"The data used in this notebook is publically available and more information can be found here:\n",
+							"https://coronavirus.data.gov.uk/details/about-data"
+						]
+					},
+					{
+						"cell_type": "markdown",
+						"metadata": {},
+						"source": [
+							"### Configuration and Setup\n",
+							"\n",
+							"We also import the Seaborn and Plotly express libraries for use in data visualisation.\n",
+							"\n",
+							"These should already be installed with the Apache Spark runtime."
+						]
+					},
+					{
+						"cell_type": "code",
+						"metadata": {},
+						"source": [
+							"import seaborn as sns\n",
+							"import plotly.express as px\n",
+							"import plotly\n",
+							"import pandas as pd\n",
+							"import matplotlib.pyplot as plt"
+						],
+						"outputs": [],
+						"execution_count": 38
+					},
+					{
+						"cell_type": "markdown",
+						"metadata": {},
+						"source": [
+							"### Querying Basics: England Positive Cases by Date\n",
+							"\n",
+							"Let's start of with a simple example.  We're going to get all the positive test cases that occurred in England from the start of the Covid pandemic, and plot these against the published date."
+						]
+					},
+					{
+						"cell_type": "code",
+						"metadata": {},
+						"source": [
+							"df = spark.sql(\n",
+							"    \"\"\"\n",
+							"        SELECT date, new_cases_by_publish_date\n",
+							"        FROM c19.nation\n",
+							"        WHERE area_name = 'England' \n",
+							"        ORDER BY date    \n",
+							"    \"\"\"\n",
+							").toPandas()\n",
+							"\n",
+							"df.head()"
+						],
+						"outputs": [],
+						"execution_count": 39
+					},
+					{
+						"cell_type": "markdown",
+						"metadata": {},
+						"source": [
+							"Pretty simple query - select the date and positive cases, filter this by England (since this table contains other UK nations), and then order by the date field.  Let's generate a line plot and see how this looks ..."
+						]
+					},
+					{
+						"cell_type": "code",
+						"metadata": {},
+						"source": [
+							"sns.set(rc={'figure.figsize':(15,8)})\n",
+							"g = sns.lineplot(data=df, x=\"date\", y=\"new_cases_by_publish_date\").set(title=\"England Positive Cases by Date\")\n",
+							"plt.show()"
+						],
+						"outputs": [],
+						"execution_count": 40
+					},
+					{
+						"cell_type": "markdown",
+						"metadata": {},
+						"source": [
+							"### Introducing Windowed functions and CTEs\n",
+							"\n",
+							"Hmmmm, OK - so this looks OK but it's not a smooth line.  This is probably due to the nature of reporting during the week when lower numbers are recorded at the weekend.  So let's fix that and generate a 7 day moving average - to do this we use an aggregated Window function as shown below - it generates a SUM of new cases over the last 7 days (current row = 0).  \n",
+							"\n",
+							"``` mysql\n",
+							"SUM(new_cases_by_publish_date) OVER (ORDER BY date ROWS BETWEEN 6 PRECEDING AND CURRENT ROW)\n",
+							"```\n",
+							"\n",
+							"But let's also modify the query to show us the last 365 days.  Now we could use a hard-coded date filter, but that means everytime you run the query, you need to change the values.  So let's generate a derived field (```num_days_ago```) and we can filter on this.  Again we use window function which is ordered by date - but this time in descending order, and we simply generate a sequential value:\n",
+							"\n",
+							"``` mysql\n",
+							"ROW_NUMBER() OVER (ORDER BY date DESC)\n",
+							"```\n",
+							"\n",
+							"So one more thing we need to do.  If we want to filter by a Window functioned value that we've derived, we essentially need to somehow alias it with a new column name, and then filter in a separate expression.  We do this using a Common Table Expression (CTE) using the ```WITH``` statement.\n",
+							"\n",
+							"``` mysql\n",
+							"WITH cte AS (\n",
+							"    ...\n",
+							")\n",
+							"SELECT * FROM cte\n",
+							"```\n",
+							"\n",
+							"Now let's put all this in action and try to plot the data again."
+						]
+					},
+					{
+						"cell_type": "code",
+						"metadata": {},
+						"source": [
+							"df = spark.sql(\n",
+							"    \"\"\"\n",
+							"    WITH england_cases AS (\n",
+							"        SELECT \n",
+							"            date, \n",
+							"            SUM(new_cases_by_publish_date) OVER (ORDER BY date ROWS BETWEEN 6 PRECEDING AND CURRENT ROW) AS positive_cases_7d_rolling_sum,\n",
+							"            ROW_NUMBER() OVER (ORDER BY date DESC) AS num_days_ago\n",
+							"        FROM c19.nation\n",
+							"        WHERE area_name = 'England'\n",
+							"    )\n",
+							"    SELECT\n",
+							"        date,\n",
+							"        positive_cases_7d_rolling_sum\n",
+							"    FROM england_cases\n",
+							"    WHERE num_days_ago <= 365\n",
+							"    \"\"\"\n",
+							").toPandas()\n",
+							"\n",
+							"sns.set(rc={'figure.figsize':(15,8)})\n",
+							"g = sns.lineplot(data=df, x=\"date\", y=\"positive_cases_7d_rolling_sum\").set(title=\"7-day Total England Positive Cases by Date\")\n",
+							"plt.show()"
+						],
+						"outputs": [],
+						"execution_count": 41
+					},
+					{
+						"cell_type": "markdown",
+						"metadata": {},
+						"source": [
+							"That's much better.  We'll use the CTEs and Window functions in the following queries.  Let's move on to a slightly more complex query."
+						]
+					},
+					{
+						"cell_type": "markdown",
+						"metadata": {},
+						"source": [
+							"### Query Table Joins: 7-day average deaths per 1 Million Population broken down by Region\n",
+							"\n",
+							"We want to look at deaths by region.  Again we use a window function to produce a 7 day rolling average to smooth out lower reported deaths at the weekend.  \n",
+							"However, different regions have different populations so to compare we want to standardise the average deaths by the region's population.\n",
+							"\n",
+							"For this we'll look at the ```c19.populations``` table which provides populations by age (and all ages) at LSOA geographical area.  \n",
+							"In order to get population by region, we need to be able to map LSOAs to Regions and we can do this using the ```c19.ltla_utla_region_mappings``` table.\n",
+							"\n",
+							"So we join the two tables and simply SUM the ```all_ages``` population to get regional populations like this:\n",
+							"\n",
+							"```mysql\n",
+							"    SELECT\n",
+							"        lsoa_to_rgn.rgn_name,\n",
+							"        SUM(pop_lsoa.all_ages) AS total_population   \n",
+							"    FROM \n",
+							"        c19.populations pop_lsoa\n",
+							"        INNER JOIN c19.ltla_utla_region_mappings lsoa_to_rgn\n",
+							"            ON pop_lsoa.code = lsoa_to_rgn.lsoa_code\n",
+							"    GROUP BY     \n",
+							"        lsoa_to_rgn.rgn_name\n",
+							"```\n",
+							"\n",
+							"We can then apply this to what we did previously using CTEs, Window functions (for the 7 day average death) to get the breakdown we need.  For this we'll limit the timescales to the last 90 days. \n",
+							"\n",
+							"However, because we're now introducing an extra level of aggregation (in this case Region), then we need to apply that extra level of breakdown to the Windowed function calls and we do this using the ```PARTITION BY``` keyword.   \n",
+							"For example, generating a sequential number for the date (```num_days_ago```) which is the same sequence for each region, we can do the following:\n",
+							"\n",
+							"```mysql \n",
+							"ROW_NUMBER() OVER (PARTITION BY area_name ORDER BY date DESC)\n",
+							"```"
+						]
+					},
+					{
+						"cell_type": "code",
+						"metadata": {},
+						"source": [
+							"df = spark.sql(\n",
+							"    \"\"\"\n",
+							"    WITH all_populations AS (\n",
+							"        SELECT \n",
+							"            area_code,\n",
+							"            population\n",
+							"        FROM c19.populations\n",
+							"        WHERE category = 'ALL'\n",
+							"    ), region_7d_deaths AS (\n",
+							"        SELECT\n",
+							"            area_code AS region_code,\n",
+							"            area_name AS region_name,\n",
+							"            date AS publish_date,\n",
+							"            AVG(1.0 * new_deaths_28_days_by_death_date) OVER (PARTITION BY area_name ORDER BY date ROWS BETWEEN 6 PRECEDING AND CURRENT ROW) AS deaths_7d_rolling_avg,\n",
+							"            ROW_NUMBER() OVER (PARTITION BY area_name ORDER BY date DESC) AS num_days_ago\n",
+							"        FROM c19.region\n",
+							"    )\n",
+							"    SELECT \n",
+							"        rgn.publish_date,\n",
+							"        rgn.region_name,\n",
+							"        (rgn.deaths_7d_rolling_avg * 1000000.0)/pop.population AS deaths_7d_avg_per_1M_population  \n",
+							"    FROM \n",
+							"        region_7d_deaths rgn\n",
+							"        INNER JOIN all_populations pop\n",
+							"            ON rgn.region_code = pop.area_code\n",
+							"    WHERE \n",
+							"        rgn.num_days_ago <= 90\n",
+							"    ORDER BY\n",
+							"        rgn.publish_date,\n",
+							"        rgn.region_name    \n",
+							"    \"\"\"\n",
+							").toPandas()\n",
+							"\n",
+							"df.head()"
+						],
+						"outputs": [],
+						"execution_count": 42
+					},
+					{
+						"cell_type": "markdown",
+						"metadata": {},
+						"source": [
+							"Let's plot how the death rates vary by region over the last 90 days"
+						]
+					},
+					{
+						"cell_type": "code",
+						"metadata": {},
+						"source": [
+							"sns.set(rc={'figure.figsize':(15,8)})\n",
+							"g = sns.lineplot(data=df, x=\"publish_date\", y=\"deaths_7d_avg_per_1M_population\", hue=\"region_name\", style=\"region_name\").set(title=\"7-day average deaths per 1 Million Population broken down by Region\")\n",
+							"plt.show()"
+						],
+						"outputs": [],
+						"execution_count": 43
+					},
+					{
+						"cell_type": "markdown",
+						"metadata": {},
+						"source": [
+							"### England 7-day rolling sum positive cases by Age Group and Gender (over last 60 days)\n",
+							"\n",
+							"Let's do a slightly different breakdown - this time positive cases by Age Group and Gender.  The ```c19.nation``` table provides cases by different age groups and genders.\n",
+							"\n",
+							"Again we use a window function to produce a 7 day rolling sum to smooth out lower reported cases at the weekend and we'll filter the dates to only show the last 60 days.\n",
+							"\n",
+							"We can then use Seaborn's ```relplot``` function to provide line charts in a grid (faceted) - so the X, Y axis is similar to before: cases by date, but now a separate graph is generated per age group providing a rapid way to visualise the data.  In addition we use the colour (hue) parameter to provide male and female lines on the same graph.\n",
+							"\n",
+							"Because each graph's X axis is small, using the actual date looks cluttered and unreadable.  So for this example, we use the ```weekofyear``` function to convert the date to a single number (week of the year) which looks better on the graphs.\n",
+							"\n",
+							"Note that the 0-4 and 5-9 age groups need to be converted to include a leading 0 digit so that the ordering of graphs is in the correct age order.\n",
+							""
+						]
+					},
+					{
+						"cell_type": "code",
+						"metadata": {
+							"collapsed": false
+						},
+						"source": [
+							"df = spark.sql(\n",
+							"    \"\"\"\n",
+							"    WITH cases_by_age AS (\n",
+							"        SELECT\n",
+							"            weekofyear(date) AS week_of_year,\n",
+							"            gender,\n",
+							"            CASE \n",
+							"                WHEN age = '0_to_4' THEN '00_to_04'\n",
+							"                WHEN age = '5_to_9' THEN '05_to_09'\n",
+							"                ELSE age \n",
+							"            END AS age,\n",
+							"            SUM(new_cases) OVER (PARTITION BY gender, age ORDER BY date ROWS BETWEEN 6 PRECEDING AND CURRENT ROW) AS cases_7d_rolling_sum,\n",
+							"            ROW_NUMBER() OVER (PARTITION BY gender, age ORDER BY date DESC) AS num_days_ago\n",
+							"        FROM c19.cases\n",
+							"        WHERE area_name = 'England'\n",
+							"    )\n",
+							"    SELECT\n",
+							"        week_of_year,\n",
+							"        gender,\n",
+							"        age,\n",
+							"        cases_7d_rolling_sum\n",
+							"    FROM cases_by_age\n",
+							"    WHERE\n",
+							"        num_days_ago <= 60\n",
+							"    ORDER BY\n",
+							"        gender,\n",
+							"        age,\n",
+							"        week_of_year\n",
+							"    \"\"\"\n",
+							").toPandas()\n",
+							"\n",
+							"\n",
+							"g = sns.relplot(\n",
+							"    data=df, x=\"week_of_year\", y=\"cases_7d_rolling_sum\", \n",
+							"    col=\"age\", hue=\"gender\", hue_order=[\"male\",\"female\"], \n",
+							"    col_wrap=4, kind=\"line\"\n",
+							")\n",
+							"plt.show()"
+						],
+						"outputs": [],
+						"execution_count": 44
+					},
+					{
+						"cell_type": "markdown",
+						"metadata": {},
+						"source": [
+							"### Latest 7-day Positive Cases and Deaths by Region-UTLA hierarchy\n",
+							"\n",
+							"In this example we'll use a Plotly Treemap which is interactive and let's us drilldown from Region to UTLA level.  We visualise the positive cases by size, and deaths by colour.\n",
+							"\n",
+							"First we'll need the number of cases/deaths at UTLA level which we can find in the ```c19.utla``` table.  \n",
+							"Additionally we'll take a similar approach in the previous example to get population by UTLA, as well as generating a mapping between UTLA and Region using the ```c19.ltla_utla_region_mappings``` table.\n",
+							"\n",
+							"We only ever want the latest figures (based on the latest 7 day window), so we filter the results by the latest date using a sub-query which looks like this:\n",
+							"\n",
+							"```mysql\n",
+							"WHERE date = (SELECT MAX(date) FROM c19.utla)\n",
+							"```\n",
+							"\n",
+							"The following query give us what we need:  Region, UTLA, Positive Cases (7-day rolling sum per 100,000 population) and Deaths (7-day rolling average per 1 million population)."
+						]
+					},
+					{
+						"cell_type": "code",
+						"metadata": {},
+						"source": [
+							"df = spark.sql(\n",
+							"    \"\"\"\n",
+							"    WITH utla_to_region AS (\n",
+							"        SELECT DISTINCT \n",
+							"            utla_code,\n",
+							"            region_name\n",
+							"        FROM c19.ltla_utla_region_mappings   \n",
+							"    ), utla_populations AS (    \n",
+							"        SELECT \n",
+							"            area_code,\n",
+							"            population\n",
+							"        FROM c19.populations\n",
+							"        WHERE category = 'ALL'\n",
+							"    ), utla_metrics AS (\n",
+							"        SELECT\n",
+							"            utla.date,\n",
+							"            utla.area_code AS utla_code,\n",
+							"            utla.area_name AS utla_name,\n",
+							"            utla_to_rgn.region_name,\n",
+							"            SUM(1.0 * utla.new_cases_by_publish_date) OVER (PARTITION BY utla.area_code ORDER BY utla.date ROWS BETWEEN 6 PRECEDING AND CURRENT ROW) AS positive_cases_7d_rolling_sum,\n",
+							"            AVG(1.0 * utla.new_deaths_28_days_by_publish_date) OVER (PARTITION BY utla.area_code ORDER BY utla.date ROWS BETWEEN 6 PRECEDING AND CURRENT ROW) AS deaths_7d_rolling_avg\n",
+							"        FROM \n",
+							"            c19.utla utla\n",
+							"            INNER JOIN utla_to_region utla_to_rgn\n",
+							"                ON utla.area_code = utla_to_rgn.utla_code    \n",
+							"    )\n",
+							"    SELECT\n",
+							"        utla.region_name,\n",
+							"        utla.utla_name,\n",
+							"        CAST((utla.positive_cases_7d_rolling_sum * 100000.0)/pop.population AS INT) AS positive_cases_7d_sum_per_100K_population,\n",
+							"        CAST((utla.deaths_7d_rolling_avg * 1000000.0)/pop.population AS REAL) AS deaths_7d_avg_per_1M_population\n",
+							"    FROM \n",
+							"        utla_metrics utla\n",
+							"        INNER JOIN utla_populations pop\n",
+							"            ON utla.utla_code = pop.area_code\n",
+							"    WHERE utla.date = (SELECT MAX(date) FROM utla_metrics)\n",
+							"    ORDER BY positive_cases_7d_sum_per_100K_population DESC\n",
+							"    \"\"\"\n",
+							").toPandas()\n",
+							"\n",
+							"# Since we've used an ORDER BY, the following will show the Top 10 UTLAs for Positive Cases\n",
+							"df.head(10)"
+						],
+						"outputs": [],
+						"execution_count": 45
+					},
+					{
+						"cell_type": "markdown",
+						"metadata": {},
+						"source": [
+							"#### Using the Plotly Express Treemap\n",
+							"\n",
+							"To create the treemap, we use Plotly Express.  Using the path parameter we can setup the hierachy between Region and UTLA, and then specify what the treemap size is based on and what the colours are based on.  Once the chart is generated, you can zoom in and out of specific regions.  Note that Wales doesn't have values for the deaths metric so there is no colour codes."
+						]
+					},
+					{
+						"cell_type": "code",
+						"metadata": {},
+						"source": [
+							"fig = px.treemap(df, path=[px.Constant(\"UK\"),'region_name', 'utla_name'], values='positive_cases_7d_sum_per_100K_population',\n",
+							"                  color='deaths_7d_avg_per_1M_population',\n",
+							"                  color_continuous_scale='reds')\n",
+							"fig.data[0].textinfo = 'label+text+value'\n",
+							"fig.update_layout(margin = dict(t=20, l=0, r=0, b=20), autosize=False,width=1200,height=700)\n",
+							"#fig.show()\n",
+							"\n",
+							"# create an html document that embeds the Plotly plot\n",
+							"h = plotly.offline.plot(fig, output_type='div')\n",
+							"\n",
+							"# display this html\n",
+							"displayHTML(h)"
+						],
+						"outputs": [],
+						"execution_count": 46
+					},
+					{
+						"cell_type": "markdown",
+						"metadata": {},
+						"source": [
+							"### Digging Deeper: Latest 30-day time-series of Top 5 UTLAs by Positive Cases for all Regions\n",
+							"\n",
+							"Let's go further.  This time we shall produce the latest 30-day time-series for all Regions.  Each of these charts will show the top 5 UTLAs for the region in terms of 7-day rolling sum per 100,000 population positive COVID-19 cases.\n",
+							"\n",
+							"There's nothing really new in this example, apart from the complexity.  To make this easier to manage, we break the full query down into a set of common table expressions (CTEs).  Essentially we need to perform 2 separate rankings.  One set of rankings is used to generate the top 5 UTLAs and we do this based on the latest date.  The other is ranked by date so we can filter out only the latest 30 days.  We then join these together.  It's pretty easy to modify the query below to change the timescale (to more or less than 30 days) as well as how much UTLAs are included in each region's rankings.\n",
+							"\n",
+							"Finally we use Seaborn's ```relplot``` to produce a 3 column grid of time-series plots, one for each region.  Note the x labels become illegible because of the size of the graphs so we rotate these to make them clearer to read."
+						]
+					},
+					{
+						"cell_type": "code",
+						"metadata": {},
+						"source": [
+							"df = spark.sql(\n",
+							"    \"\"\"\n",
+							"    \n",
+							"    WITH utla_to_region AS (\n",
+							"        SELECT DISTINCT \n",
+							"            utla_code,\n",
+							"            region_name\n",
+							"        FROM c19.ltla_utla_region_mappings   \n",
+							"    ), populations_by_utla AS (    \n",
+							"        SELECT \n",
+							"            utla_to_rgn.region_name,\n",
+							"            utla_to_rgn.utla_code,\n",
+							"            pop.population AS total_population\n",
+							"        FROM \n",
+							"            c19.populations pop\n",
+							"            INNER JOIN utla_to_region utla_to_rgn\n",
+							"                ON pop.area_code = utla_to_rgn.utla_code\n",
+							"        WHERE pop.category = 'ALL'\n",
+							"    ), pos_7d_cases_by_utla_and_date AS (\n",
+							"        SELECT\n",
+							"            area_code AS utla_code,\n",
+							"            area_name AS utla_name,\n",
+							"            date AS publish_date,\n",
+							"            SUM(1.0 * new_cases_by_publish_date) OVER (PARTITION BY area_code ORDER BY date ROWS BETWEEN 6 PRECEDING AND CURRENT ROW) AS positive_cases_7d_rolling_sum\n",
+							"        FROM c19.utla\n",
+							"    ), pos_7d_cases_per_pop_by_utla_and_date AS (\n",
+							"        SELECT\n",
+							"            pop.region_name,\n",
+							"            utla.utla_code,\n",
+							"            utla.utla_name,\n",
+							"            utla.publish_date,\n",
+							"            CAST((utla.positive_cases_7d_rolling_sum * 100000.0)/pop.total_population AS INTEGER) AS cases_7d_rate_per_100k_population\n",
+							"        FROM \n",
+							"            pos_7d_cases_by_utla_and_date utla\n",
+							"            INNER JOIN populations_by_utla pop\n",
+							"                ON utla.utla_code = pop.utla_code\n",
+							"    ), pos_7d_cases_per_pop_by_utla_and_date_with_date_rank AS (\n",
+							"        SELECT\n",
+							"            region_name,\n",
+							"            utla_code,\n",
+							"            utla_name,\n",
+							"            publish_date,\n",
+							"            cases_7d_rate_per_100k_population,\n",
+							"            ROW_NUMBER() OVER (PARTITION BY utla_code ORDER BY publish_date DESC) AS num_days_ago\n",
+							"        FROM pos_7d_cases_per_pop_by_utla_and_date \n",
+							"    ), pos_7d_cases_per_pop_by_utla_and_date_with_case_rank AS (\n",
+							"        SELECT\n",
+							"            region_name,\n",
+							"            utla_code,\n",
+							"            utla_name,\n",
+							"            publish_date,\n",
+							"            ROW_NUMBER() OVER (PARTITION BY region_name ORDER BY cases_7d_rate_per_100k_population DESC) AS positive_cases_7d_rolling_sum_rank\n",
+							"        FROM pos_7d_cases_per_pop_by_utla_and_date \n",
+							"        WHERE \n",
+							"            publish_date = (SELECT MAX(publish_date) FROM pos_7d_cases_per_pop_by_utla_and_date)\n",
+							"    )\n",
+							"    SELECT\n",
+							"        r1.region_name,\n",
+							"        r1.utla_name,\n",
+							"        r1.publish_date,\n",
+							"        r1.cases_7d_rate_per_100k_population\n",
+							"    FROM \n",
+							"        pos_7d_cases_per_pop_by_utla_and_date_with_date_rank r1\n",
+							"        INNER JOIN pos_7d_cases_per_pop_by_utla_and_date_with_case_rank r2\n",
+							"            ON r1.utla_code = r2.utla_code\n",
+							"    WHERE\n",
+							"        r1.num_days_ago <= 30\n",
+							"    AND r2.positive_cases_7d_rolling_sum_rank <= 5\n",
+							"    ORDER BY\n",
+							"            r1.region_name,\n",
+							"            r2.positive_cases_7d_rolling_sum_rank,\n",
+							"            r1.publish_date\n",
+							"    \"\"\"\n",
+							").toPandas()\n",
+							"\n",
+							"g = sns.relplot(\n",
+							"    data=df, x=\"publish_date\", y=\"cases_7d_rate_per_100k_population\", \n",
+							"    hue=\"utla_name\", style=\"utla_name\", col=\"region_name\", \n",
+							"    col_wrap=3, kind=\"line\", palette=\"Set1\"\n",
+							")\n",
+							"\n",
+							"# rotate x labels so they're legible\n",
+							"tx = g.set_xticklabels(rotation=30)\n",
+							"\n",
+							"plt.show()"
+						],
+						"outputs": [],
+						"execution_count": 47
+					},
+					{
+						"cell_type": "markdown",
+						"metadata": {},
+						"source": [
+							"### Hospital Metrics over the last 60 days by NHS Region\n",
+							"\n",
+							"So far we've looked at positive cases and deaths.  Now we explore some hospital metrics: number of admissions, number of patients in hospital and patients on mechanical ventilation.\n",
+							"\n",
+							"This data is available at NHS Region level using the ```c19.nhsregion``` table.\n",
+							"\n",
+							"In order to use Seaborn's ```relplot``` function we need to move away from wide format data.  This refers to the three metrics as being three separate columns.  \n",
+							"In order to plot multiple series, we need to convert to long format - that is one row per metric.\n",
+							"\n",
+							"This is pretty straightforward using SQL - we simply have a ```SELECT``` statement for each metric and use ```UNION ALL``` to stitch them together into one output.  \n",
+							"We have one column to define which metric (```metric_type```), and one column for the metric's value (```metric_value```).  \n",
+							"We can then pass these to the ```relplot``` function to have have a time-series with all 3 metrics.  We then produce separate charts for each of the NHS Regions."
+						]
+					},
+					{
+						"cell_type": "code",
+						"metadata": {},
+						"source": [
+							"df = spark.sql(\n",
+							"    \"\"\"\n",
+							"    WITH nhs_region_metrics_wide_format AS (\n",
+							"        SELECT\n",
+							"            area_name AS nhs_region,\n",
+							"            date,\n",
+							"            new_admissions,\n",
+							"            covid_occupied_mv_beds,\n",
+							"            hospital_cases,\n",
+							"            ROW_NUMBER() OVER (PARTITION BY area_name ORDER BY date DESC) AS num_days_ago\n",
+							"        FROM c19.nhsregion\n",
+							"    ), nhs_region_metrics AS (\n",
+							"        SELECT nhs_region, date, num_days_ago, new_admissions AS metric_value, 'New Admissions' AS metric_type\n",
+							"        FROM nhs_region_metrics_wide_format\n",
+							"            UNION ALL\n",
+							"        SELECT nhs_region, date, num_days_ago, covid_occupied_mv_beds AS metric_value, 'On ventilation' AS metric_type\n",
+							"        FROM nhs_region_metrics_wide_format\n",
+							"            UNION ALL\n",
+							"        SELECT nhs_region, date, num_days_ago, hospital_cases AS metric_value, 'In Hospital' AS metric_type\n",
+							"        FROM nhs_region_metrics_wide_format\n",
+							"    )\n",
+							"    SELECT \n",
+							"        nhs_region, \n",
+							"        date, \n",
+							"        metric_value, \n",
+							"        metric_type\n",
+							"    FROM nhs_region_metrics\n",
+							"    WHERE num_days_ago <= 60\n",
+							"    \"\"\"\n",
+							").toPandas()\n",
+							"\n",
+							"g = sns.relplot(\n",
+							"    data=df, x=\"date\", y=\"metric_value\", \n",
+							"    col=\"nhs_region\", style=\"metric_type\",\n",
+							"    col_wrap=3, kind=\"line\", palette=\"Set1\"\n",
+							")\n",
+							"\n",
+							"# rotate x labels so they're legible\n",
+							"tx = g.set_xticklabels(rotation=30)\n",
+							"\n",
+							"plt.show()"
+						],
+						"outputs": [],
+						"execution_count": 49
+					},
+					{
+						"cell_type": "markdown",
+						"metadata": {},
+						"source": [
+							"### England 7-day average Cases, Deaths, Vaccinations and Hospital Metrics over the last 120 days \n",
+							"\n",
+							"Similar to the previous example, we can show separate plots for each of the metrics available at England level using the ```c19.nation``` table.\n",
+							"\n",
+							"Again we convert the wide format data into long format using the same ```UNION ALL``` technique as we did last time.\n",
+							"\n",
+							"One difference this time is that we really need the separate plots to have a separate Y-axis scale, so for this we use the ```facet_kws``` parameter and specify that the Y-axis is not shared."
+						]
+					},
+					{
+						"cell_type": "code",
+						"metadata": {},
+						"source": [
+							"df = spark.sql(\n",
+							"    \"\"\"\n",
+							"    WITH england_metrics AS (\n",
+							"        SELECT\n",
+							"            date,\n",
+							"            new_cases_by_publish_date,\n",
+							"            new_admissions,\n",
+							"            covid_occupied_mv_beds,\n",
+							"            hospital_cases,\n",
+							"            new_deaths_28_days_by_publish_date,\n",
+							"            new_tests_by_publish_date,\n",
+							"            new_people_vaccinated_first_dose_by_publish_date,\n",
+							"            new_people_vaccinated_second_dose_by_publish_date,\n",
+							"            ROW_NUMBER() OVER (ORDER BY date DESC) AS num_days_ago    \n",
+							"        FROM \n",
+							"            c19.nation\n",
+							"        WHERE \n",
+							"            area_name = 'England'\n",
+							"    ), england_metrics_7d_avg AS (\n",
+							"        SELECT\n",
+							"            date,\n",
+							"            AVG(new_cases_by_publish_date) OVER (ORDER BY date ROWS BETWEEN 6 PRECEDING AND CURRENT ROW) AS cases_7d_avg,\n",
+							"            AVG(new_admissions) OVER (ORDER BY date ROWS BETWEEN 6 PRECEDING AND CURRENT ROW) AS admissions_7d_avg,\n",
+							"            AVG(covid_occupied_mv_beds) OVER (ORDER BY date ROWS BETWEEN 6 PRECEDING AND CURRENT ROW) AS on_ventilators_7d_avg,\n",
+							"            AVG(hospital_cases) OVER (ORDER BY date ROWS BETWEEN 6 PRECEDING AND CURRENT ROW) AS in_hospital_7d_avg,\n",
+							"            AVG(new_deaths_28_days_by_publish_date) OVER (ORDER BY date ROWS BETWEEN 6 PRECEDING AND CURRENT ROW) AS deaths_7d_avg,\n",
+							"            AVG(new_tests_by_publish_date) OVER (ORDER BY date ROWS BETWEEN 6 PRECEDING AND CURRENT ROW) AS tests_7d_avg,\n",
+							"            AVG(new_people_vaccinated_first_dose_by_publish_date) OVER (ORDER BY date ROWS BETWEEN 6 PRECEDING AND CURRENT ROW) AS first_dose_7d_avg,\n",
+							"            AVG(new_people_vaccinated_second_dose_by_publish_date) OVER (ORDER BY date ROWS BETWEEN 6 PRECEDING AND CURRENT ROW) AS second_dose_7d_avg,\n",
+							"            ROW_NUMBER() OVER (ORDER BY date DESC) AS num_days_ago    \n",
+							"        FROM \n",
+							"            england_metrics\n",
+							"    ), england_metrics_pivot AS (\n",
+							"            SELECT date, num_days_ago, cases_7d_avg AS metric_value, '01 - Cases' AS metric_type\n",
+							"            FROM england_metrics_7d_avg\n",
+							"                UNION ALL\n",
+							"            SELECT date, num_days_ago, deaths_7d_avg AS metric_value, '02 - Deaths' AS metric_type\n",
+							"            FROM england_metrics_7d_avg\n",
+							"                UNION ALL\n",
+							"            SELECT date, num_days_ago, first_dose_7d_avg AS metric_value, '03 - First Dose Vaccine' AS metric_type\n",
+							"            FROM england_metrics_7d_avg    \n",
+							"                UNION ALL\n",
+							"            SELECT date, num_days_ago, second_dose_7d_avg AS metric_value, '04 - Second Dose Vaccine' AS metric_type\n",
+							"            FROM england_metrics_7d_avg                 \n",
+							"                UNION ALL\n",
+							"            SELECT date, num_days_ago, admissions_7d_avg AS metric_value, '05 - Admissions' AS metric_type\n",
+							"            FROM england_metrics_7d_avg\n",
+							"                UNION ALL\n",
+							"            SELECT date, num_days_ago, on_ventilators_7d_avg AS metric_value, '06 - On Ventilation' AS metric_type\n",
+							"            FROM england_metrics_7d_avg\n",
+							"                UNION ALL\n",
+							"            SELECT date, num_days_ago, in_hospital_7d_avg AS metric_value, '07 - In Hospital' AS metric_type\n",
+							"            FROM england_metrics_7d_avg            \n",
+							"                UNION ALL\n",
+							"            SELECT date, num_days_ago, tests_7d_avg AS metric_value, '08 - Tests' AS metric_type\n",
+							"            FROM england_metrics_7d_avg\n",
+							"    )    \n",
+							"    SELECT \n",
+							"        date, \n",
+							"        metric_value, \n",
+							"        metric_type\n",
+							"    FROM england_metrics_pivot\n",
+							"    WHERE num_days_ago <= 120\n",
+							"    ORDER BY\n",
+							"        metric_type,\n",
+							"        date\n",
+							"    \"\"\"\n",
+							").toPandas()\n",
+							"\n",
+							"g = sns.relplot(\n",
+							"    data=df, x=\"date\", y=\"metric_value\", \n",
+							"    col=\"metric_type\", style=\"metric_type\", kind=\"line\", palette=\"Set1\", col_wrap=4,\n",
+							"    facet_kws={'sharey': False, 'sharex': True}\n",
+							")\n",
+							"g.fig.suptitle('England 7-day average Cases, Deaths, Vaccinations and Hospital Metrics over the last 120 days', fontsize=16)\n",
+							"g.fig.subplots_adjust(top=0.9);\n",
+							"\n",
+							"# rotate x labels so they're legible\n",
+							"tx = g.set_xticklabels(rotation=30)\n",
+							"\n",
+							"plt.show()"
+						],
+						"outputs": [],
+						"execution_count": 50
+					},
+					{
+						"cell_type": "markdown",
+						"metadata": {},
+						"source": [
+							"### Generating a COVID-19 Vaccination Uptake Chart with PyWaffle \n",
+							"\n",
+							"On the UK Gov's Coronavirus dashboard, the percentage uptake of vaccination (first and second dose) is shown as a *waffle* chart.  We can do the same thing using matplotlib but we need to install the PyWaffle library and then import it ready for use as follows.\n",
+							"\n",
+							"If the library is not installed then use `pip install PyWaffle` - for a Synapse Spark pool, you can also download the Python package (from ) and upload this as a workload package and then assign this to your Spark pool."
+						]
+					},
+					{
+						"cell_type": "code",
+						"metadata": {},
+						"source": [
+							"import matplotlib.pyplot as plt\n",
+							"from pywaffle import Waffle"
+						],
+						"outputs": [],
+						"execution_count": 51
+					},
+					{
+						"cell_type": "markdown",
+						"metadata": {},
+						"source": [
+							"Using the ```c19.nation```  table we need to get the total first and second dose uptake and then divide this by an estimate of the UK's 16+ population to get a percentage.\n",
+							"\n",
+							"First we take just the latest data using ```MAX(date)``` and then we sum the totals since these are broken down by nation and we need a UK total.  Then we need pivot the results in order to get a Pandas data series that can be used by the PyWaffle graphing component.  Note that sometimes the latest data doesn't contain the cumulative totals so we filter based on the maximum date where these two fields have data.\n",
+							"\n",
+							"Since the first dose is really shown as a delta on the second dose, then we actually subtract the second dose total from the first for the purposes of this chart, and finally get the percentage that haven't taken the vaccine."
+						]
+					},
+					{
+						"cell_type": "code",
+						"metadata": {},
+						"source": [
+							"df = spark.sql(\n",
+							"\"\"\"\n",
+							"WITH vaccination_totals AS (\n",
+							"    SELECT\n",
+							"        SUM(cum_people_vaccinated_first_dose_by_publish_date) AS total_first_dose, \n",
+							"        SUM(cum_people_vaccinated_second_dose_by_publish_date) AS total_second_dose \n",
+							"    FROM c19.nation \n",
+							"    WHERE\n",
+							"        date = (\n",
+							"            SELECT MAX(date) \n",
+							"            FROM c19.nation\n",
+							"            WHERE\n",
+							"                cum_people_vaccinated_first_dose_by_publish_date IS NOT NULL\n",
+							"            AND cum_people_vaccinated_second_dose_by_publish_date IS NOT NULL\n",
+							"        )\n",
+							")\n",
+							"SELECT\n",
+							"    'Second Dose' AS dose,\n",
+							"    total_second_dose/543268.0 AS percentage_uptake\n",
+							"FROM vaccination_totals \n",
+							"    UNION ALL\n",
+							"SELECT\n",
+							"    'First Dose' AS dose,\n",
+							"    (total_first_dose - total_second_dose)/543268.0 AS percentage_uptake\n",
+							"FROM vaccination_totals \n",
+							"    \n",
+							"    UNION ALL\n",
+							"SELECT\n",
+							"    'None' AS dose,\n",
+							"    (54326800 - total_first_dose)/543268.0 AS percentage_uptake\n",
+							"FROM vaccination_totals \n",
+							"    \n",
+							"--ORDER BY percentage_uptake DESC\n",
+							"\"\"\"\n",
+							").toPandas()\n",
+							"\n",
+							"df.head()"
+						],
+						"outputs": [],
+						"execution_count": 52
+					},
+					{
+						"cell_type": "markdown",
+						"metadata": {},
+						"source": [
+							"Now we configure the Waffle chart and pass in the ```percentage_uptake``` series as the data."
+						]
+					},
+					{
+						"cell_type": "code",
+						"metadata": {},
+						"source": [
+							"import warnings\n",
+							"warnings.filterwarnings(\"ignore\")\n",
+							"\n",
+							"fig = plt.figure(\n",
+							"    FigureClass=Waffle,\n",
+							"    rows=10, columns=10, vertical=True, rounding_rule='nearest',\n",
+							"    values=df[\"percentage_uptake\"],\n",
+							"    title={'label': 'Percentage vaccinated of adult population','loc': 'left','fontdict': {'fontsize': 14}},    \n",
+							"    legend={'labels': [\"Second\",\"First\",\"None\"],'loc': 'lower left','bbox_to_anchor': (0, -0.15),'ncol': 3,'framealpha': 0,'fontsize': 12},\n",
+							"    colors=[\"#21618C\", \"#3498DB\", \"#D6EAF8\"],\n",
+							"    figsize=(10, 5)\n",
+							"    )\n",
+							"\n",
+							"plt.show()"
+						],
+						"outputs": [],
+						"execution_count": 55
 					}
 				]
 			},
