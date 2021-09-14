@@ -78,7 +78,7 @@
 					"import pandas as pd\n",
 					"import matplotlib.pyplot as plt"
 				],
-				"execution_count": 29
+				"execution_count": 35
 			},
 			{
 				"cell_type": "markdown",
@@ -102,7 +102,7 @@
 					"\n",
 					"df.head()"
 				],
-				"execution_count": 12
+				"execution_count": null
 			},
 			{
 				"cell_type": "markdown",
@@ -117,7 +117,7 @@
 					"g = sns.lineplot(data=df, x=\"date\", y=\"new_cases_by_publish_date\").set(title=\"England Positive Cases by Date\")\n",
 					"plt.show()"
 				],
-				"execution_count": 13
+				"execution_count": null
 			},
 			{
 				"cell_type": "markdown",
@@ -173,7 +173,7 @@
 					"g = sns.lineplot(data=df, x=\"date\", y=\"positive_cases_7d_rolling_sum\").set(title=\"7-day Total England Positive Cases by Date\")\n",
 					"plt.show()"
 				],
-				"execution_count": 14
+				"execution_count": null
 			},
 			{
 				"cell_type": "markdown",
@@ -251,7 +251,7 @@
 					"\n",
 					"df.head()"
 				],
-				"execution_count": 15
+				"execution_count": null
 			},
 			{
 				"cell_type": "markdown",
@@ -266,7 +266,7 @@
 					"g = sns.lineplot(data=df, x=\"publish_date\", y=\"deaths_7d_avg_per_1M_population\", hue=\"region_name\", style=\"region_name\").set(title=\"7-day average deaths per 1 Million Population broken down by Region\")\n",
 					"plt.show()"
 				],
-				"execution_count": 16
+				"execution_count": null
 			},
 			{
 				"cell_type": "markdown",
@@ -330,7 +330,7 @@
 					")\n",
 					"plt.show()"
 				],
-				"execution_count": 24
+				"execution_count": null
 			},
 			{
 				"cell_type": "markdown",
@@ -396,7 +396,7 @@
 					"# Since we've used an ORDER BY, the following will show the Top 10 UTLAs for Positive Cases\n",
 					"df.head(10)"
 				],
-				"execution_count": 26
+				"execution_count": null
 			},
 			{
 				"cell_type": "markdown",
@@ -422,7 +422,7 @@
 					"# display this html\n",
 					"displayHTML(h)"
 				],
-				"execution_count": 30
+				"execution_count": null
 			},
 			{
 				"cell_type": "markdown",
@@ -525,7 +525,7 @@
 					"\n",
 					"plt.show()"
 				],
-				"execution_count": 33
+				"execution_count": null
 			},
 			{
 				"cell_type": "markdown",
@@ -544,9 +544,9 @@
 			{
 				"cell_type": "code",
 				"source": [
-					"df = pd.read_sql(\n",
+					"df = spark.sql(\n",
 					"    \"\"\"\n",
-					"    ;WITH nhs_region_metrics_wide_format AS (\n",
+					"    WITH nhs_region_metrics_wide_format AS (\n",
 					"        SELECT\n",
 					"            area_name AS nhs_region,\n",
 					"            date,\n",
@@ -554,7 +554,7 @@
 					"            covid_occupied_mv_beds,\n",
 					"            hospital_cases,\n",
 					"            ROW_NUMBER() OVER (PARTITION BY area_name ORDER BY date DESC) AS num_days_ago\n",
-					"        FROM c19dashboard_uk__nhsregion_daily_metrics\n",
+					"        FROM c19nhsregion\n",
 					"    ), nhs_region_metrics AS (\n",
 					"        SELECT nhs_region, date, num_days_ago, new_admissions AS metric_value, 'New Admissions' AS metric_type\n",
 					"        FROM nhs_region_metrics_wide_format\n",
@@ -572,9 +572,8 @@
 					"        metric_type\n",
 					"    FROM nhs_region_metrics\n",
 					"    WHERE num_days_ago <= 60\n",
-					"    \"\"\", \n",
-					"    conn\n",
-					")\n",
+					"    \"\"\"\n",
+					").toPandas()\n",
 					"\n",
 					"g = sns.relplot(\n",
 					"    data=df, x=\"date\", y=\"metric_value\", \n",
@@ -583,7 +582,9 @@
 					")\n",
 					"\n",
 					"# rotate x labels so they're legible\n",
-					"tx = g.set_xticklabels(rotation=30)"
+					"tx = g.set_xticklabels(rotation=30)\n",
+					"\n",
+					"plt.show()"
 				],
 				"execution_count": null
 			},
@@ -602,9 +603,9 @@
 			{
 				"cell_type": "code",
 				"source": [
-					"df = pd.read_sql(\n",
+					"df = spark.sql(\n",
 					"    \"\"\"\n",
-					"    ;WITH england_metrics AS (\n",
+					"    WITH england_metrics AS (\n",
 					"        SELECT\n",
 					"            date,\n",
 					"            new_cases_by_publish_date,\n",
@@ -617,7 +618,7 @@
 					"            new_people_vaccinated_second_dose_by_publish_date,\n",
 					"            ROW_NUMBER() OVER (ORDER BY date DESC) AS num_days_ago    \n",
 					"        FROM \n",
-					"            c19dashboard_uk__national_daily_metrics\n",
+					"            c19.nation\n",
 					"        WHERE \n",
 					"            area_name = 'England'\n",
 					"    ), england_metrics_7d_avg AS (\n",
@@ -668,9 +669,8 @@
 					"    ORDER BY\n",
 					"        metric_type,\n",
 					"        date\n",
-					"    \"\"\", \n",
-					"    conn\n",
-					")\n",
+					"    \"\"\"\n",
+					").toPandas()\n",
 					"\n",
 					"g = sns.relplot(\n",
 					"    data=df, x=\"date\", y=\"metric_value\", \n",
@@ -681,7 +681,9 @@
 					"g.fig.subplots_adjust(top=0.9);\n",
 					"\n",
 					"# rotate x labels so they're legible\n",
-					"tx = g.set_xticklabels(rotation=30)"
+					"tx = g.set_xticklabels(rotation=30)\n",
+					"\n",
+					"plt.show()"
 				],
 				"execution_count": null
 			},
@@ -716,17 +718,17 @@
 			{
 				"cell_type": "code",
 				"source": [
-					"df = pd.read_sql(\n",
+					"df = spark.sql(\n",
 					"\"\"\"\n",
-					";WITH vaccination_totals AS (\n",
+					"WITH vaccination_totals AS (\n",
 					"    SELECT\n",
 					"        SUM(cum_people_vaccinated_first_dose_by_publish_date) AS total_first_dose, \n",
 					"        SUM(cum_people_vaccinated_second_dose_by_publish_date) AS total_second_dose \n",
-					"    FROM c19dashboard_uk__national_daily_metrics \n",
+					"    FROM c19.nation \n",
 					"    WHERE\n",
 					"        date = (\n",
 					"            SELECT MAX(date) \n",
-					"            FROM c19dashboard_uk__national_daily_metrics\n",
+					"            FROM c19.nation\n",
 					"            WHERE\n",
 					"                cum_people_vaccinated_first_dose_by_publish_date IS NOT NULL\n",
 					"            AND cum_people_vaccinated_second_dose_by_publish_date IS NOT NULL\n",
@@ -749,9 +751,9 @@
 					"FROM vaccination_totals \n",
 					"    \n",
 					"--ORDER BY percentage_uptake DESC\n",
-					"\"\"\", \n",
-					"    conn\n",
-					")\n",
+					"\"\"\"\n",
+					").toPandas()\n",
+					"\n",
 					"df.head()"
 				],
 				"execution_count": null
@@ -776,53 +778,9 @@
 					"    legend={'labels': [\"Second\",\"First\",\"None\"],'loc': 'lower left','bbox_to_anchor': (0, -0.15),'ncol': 3,'framealpha': 0,'fontsize': 12},\n",
 					"    colors=[\"#21618C\", \"#3498DB\", \"#D6EAF8\"],\n",
 					"    figsize=(10, 5)\n",
-					")\n",
+					"    )\n",
+					"\n",
 					"fig.show()"
-				],
-				"execution_count": null
-			},
-			{
-				"cell_type": "markdown",
-				"source": [
-					"### Cleanup\n",
-					"\n",
-					"Ensure all changes are committed and then close the Sqlite connection.  Also force garbage collection - at this point, there should be no locks on the database file so it could be zipped up and deleted."
-				]
-			},
-			{
-				"cell_type": "code",
-				"source": [
-					"import gc\n",
-					"\n",
-					"# Commit and close Sqlite connection\n",
-					"conn.commit()\n",
-					"conn.close()\n",
-					"\n",
-					"# Force garbage collection\n",
-					"_ = gc.collect(2)"
-				],
-				"execution_count": null
-			},
-			{
-				"cell_type": "markdown",
-				"source": [
-					"### Optional: Compress Sqlite database file \n",
-					"\n",
-					"To help keep file sizes small and to allow the database to be easily stored in a Git repo, you may want to compress the database file and then remove the original."
-				]
-			},
-			{
-				"cell_type": "code",
-				"source": [
-					"import os\n",
-					"import gzip\n",
-					"import shutil\n",
-					"\n",
-					"with open(sqlite_db_path, \"rb\") as f_in:\n",
-					"    with gzip.open(sqlite_db_path + \".gz\", \"wb\") as f_out:\n",
-					"        shutil.copyfileobj(f_in, f_out)\n",
-					"        \n",
-					"os.remove(sqlite_db_path)"
 				],
 				"execution_count": null
 			}
