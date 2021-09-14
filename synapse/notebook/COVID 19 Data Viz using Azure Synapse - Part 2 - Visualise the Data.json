@@ -79,7 +79,7 @@
 					"import pandas as pd\n",
 					"import matplotlib.pyplot as plt"
 				],
-				"execution_count": 35
+				"execution_count": 38
 			},
 			{
 				"cell_type": "markdown",
@@ -103,7 +103,7 @@
 					"\n",
 					"df.head()"
 				],
-				"execution_count": null
+				"execution_count": 39
 			},
 			{
 				"cell_type": "markdown",
@@ -118,7 +118,7 @@
 					"g = sns.lineplot(data=df, x=\"date\", y=\"new_cases_by_publish_date\").set(title=\"England Positive Cases by Date\")\n",
 					"plt.show()"
 				],
-				"execution_count": null
+				"execution_count": 40
 			},
 			{
 				"cell_type": "markdown",
@@ -174,7 +174,7 @@
 					"g = sns.lineplot(data=df, x=\"date\", y=\"positive_cases_7d_rolling_sum\").set(title=\"7-day Total England Positive Cases by Date\")\n",
 					"plt.show()"
 				],
-				"execution_count": null
+				"execution_count": 41
 			},
 			{
 				"cell_type": "markdown",
@@ -255,7 +255,7 @@
 					"\n",
 					"df.head()"
 				],
-				"execution_count": null
+				"execution_count": 42
 			},
 			{
 				"cell_type": "markdown",
@@ -270,7 +270,7 @@
 					"g = sns.lineplot(data=df, x=\"publish_date\", y=\"deaths_7d_avg_per_1M_population\", hue=\"region_name\", style=\"region_name\").set(title=\"7-day average deaths per 1 Million Population broken down by Region\")\n",
 					"plt.show()"
 				],
-				"execution_count": null
+				"execution_count": 43
 			},
 			{
 				"cell_type": "markdown",
@@ -334,7 +334,7 @@
 					")\n",
 					"plt.show()"
 				],
-				"execution_count": null
+				"execution_count": 44
 			},
 			{
 				"cell_type": "markdown",
@@ -401,7 +401,7 @@
 					"# Since we've used an ORDER BY, the following will show the Top 10 UTLAs for Positive Cases\n",
 					"df.head(10)"
 				],
-				"execution_count": null
+				"execution_count": 45
 			},
 			{
 				"cell_type": "markdown",
@@ -427,7 +427,7 @@
 					"# display this html\n",
 					"displayHTML(h)"
 				],
-				"execution_count": null
+				"execution_count": 46
 			},
 			{
 				"cell_type": "markdown",
@@ -530,7 +530,7 @@
 					"\n",
 					"plt.show()"
 				],
-				"execution_count": null
+				"execution_count": 47
 			},
 			{
 				"cell_type": "markdown",
@@ -562,7 +562,7 @@
 					"            covid_occupied_mv_beds,\n",
 					"            hospital_cases,\n",
 					"            ROW_NUMBER() OVER (PARTITION BY area_name ORDER BY date DESC) AS num_days_ago\n",
-					"        FROM c19nhsregion\n",
+					"        FROM c19.nhsregion\n",
 					"    ), nhs_region_metrics AS (\n",
 					"        SELECT nhs_region, date, num_days_ago, new_admissions AS metric_value, 'New Admissions' AS metric_type\n",
 					"        FROM nhs_region_metrics_wide_format\n",
@@ -594,7 +594,7 @@
 					"\n",
 					"plt.show()"
 				],
-				"execution_count": null
+				"execution_count": 49
 			},
 			{
 				"cell_type": "markdown",
@@ -693,7 +693,7 @@
 					"\n",
 					"plt.show()"
 				],
-				"execution_count": null
+				"execution_count": 50
 			},
 			{
 				"cell_type": "markdown",
@@ -711,7 +711,7 @@
 					"import matplotlib.pyplot as plt\n",
 					"from pywaffle import Waffle"
 				],
-				"execution_count": null
+				"execution_count": 51
 			},
 			{
 				"cell_type": "markdown",
@@ -764,7 +764,7 @@
 					"\n",
 					"df.head()"
 				],
-				"execution_count": null
+				"execution_count": 52
 			},
 			{
 				"cell_type": "markdown",
@@ -788,9 +788,9 @@
 					"    figsize=(10, 5)\n",
 					"    )\n",
 					"\n",
-					"fig.show()"
+					"plt.show()"
 				],
-				"execution_count": null
+				"execution_count": 55
 			}
 		]
 	}
