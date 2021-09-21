@@ -1,0 +1,134 @@
+{
+	"name": "Notebook 1",
+	"properties": {
+		"nbformat": 4,
+		"nbformat_minor": 2,
+		"bigDataPool": {
+			"referenceName": "spkruntime31",
+			"type": "BigDataPoolReference"
+		},
+		"sessionProperties": {
+			"driverMemory": "28g",
+			"driverCores": 4,
+			"executorMemory": "28g",
+			"executorCores": 4,
+			"numExecutors": 2,
+			"conf": {
+				"spark.dynamicAllocation.enabled": "false",
+				"spark.dynamicAllocation.minExecutors": "2",
+				"spark.dynamicAllocation.maxExecutors": "2"
+			}
+		},
+		"metadata": {
+			"saveOutput": true,
+			"enableDebugMode": false,
+			"kernelspec": {
+				"name": "synapse_pyspark",
+				"display_name": "Synapse PySpark"
+			},
+			"language_info": {
+				"name": "python"
+			},
+			"a365ComputeOptions": {
+				"id": "/subscriptions/55536dc5-9813-4408-94ca-828f31382219/resourceGroups/rg-synapse-dev-uks-1/providers/Microsoft.Synapse/workspaces/ws-synapse-dev-uks-1/bigDataPools/spkruntime31",
+				"name": "spkruntime31",
+				"type": "Spark",
+				"endpoint": "https://ws-synapse-dev-uks-1.dev.azuresynapse.net/livyApi/versions/2019-11-01-preview/sparkPools/spkruntime31",
+				"auth": {
+					"type": "AAD",
+					"authResource": "https://dev.azuresynapse.net"
+				},
+				"sparkVersion": "3.1",
+				"nodeCount": 3,
+				"cores": 4,
+				"memory": 28
+			},
+			"sessionKeepAliveTimeout": 30
+		},
+		"cells": [
+			{
+				"cell_type": "code",
+				"metadata": {
+					"microsoft": {
+						"language": "python"
+					}
+				},
+				"source": [
+					"%%pyspark\n",
+					"df = spark.sql(\"SELECT * FROM `nyctaxi`.`trip`\")\n",
+					"# df.show(10)"
+				],
+				"execution_count": 1
+			},
+			{
+				"cell_type": "code",
+				"metadata": {
+					"jupyter": {
+						"source_hidden": false,
+						"outputs_hidden": false
+					},
+					"nteract": {
+						"transient": {
+							"deleting": false
+						}
+					},
+					"collapsed": false
+				},
+				"source": [
+					"df = spark.sql(\r\n",
+					"\"\"\"\r\n",
+					"SELECT \r\n",
+					" `DateID`\r\n",
+					",CAST((`DateID`/10000) AS INT) AS `Year`\r\n",
+					",CAST(((`DateID`%10000)/100) AS INT) AS `Month`\r\n",
+					",(`DateID`%100) AS `Day`\r\n",
+					",`MedallionID`\r\n",
+					",`HackneyLicenseID`\r\n",
+					",`PickupTimeID`\r\n",
+					",`DropoffTimeID`\r\n",
+					",`PickupGeographyID`\r\n",
+					",`DropoffGeographyID`\r\n",
+					",`PickupLatitude`\r\n",
+					",`PickupLongitude`\r\n",
+					",`PickupLatLong`\r\n",
+					",`DropoffLatitude`\r\n",
+					",`DropoffLongitude`\r\n",
+					",`DropoffLatLong`\r\n",
+					",`PassengerCount`\r\n",
+					",`TripDurationSeconds`\r\n",
+					",`TripDistanceMiles`\r\n",
+					",`PaymentType`\r\n",
+					",`FareAmount`\r\n",
+					",`SurchargeAmount`\r\n",
+					",`TaxAmount`\r\n",
+					",`TipAmount`\r\n",
+					",`TollsAmount`\r\n",
+					",`TotalAmount`\r\n",
+					" FROM `nyctaxi`.`trip`\r\n",
+					"\"\"\"\r\n",
+					")\r\n",
+					"display(df)"
+				],
+				"execution_count": 4
+			},
+			{
+				"cell_type": "code",
+				"metadata": {
+					"jupyter": {
+						"source_hidden": false,
+						"outputs_hidden": false
+					},
+					"nteract": {
+						"transient": {
+							"deleting": false
+						}
+					}
+				},
+				"source": [
+					"df.write.partitionBy(\"Year\",\"Month\",\"Day\").save(\"abfss://users@sasynapsedevuks1.dfs.core.windows.net/test/output4/\")"
+				],
+				"execution_count": 7
+			}
+		]
+	}
+}
