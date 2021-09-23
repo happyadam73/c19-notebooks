@@ -51,12 +51,13 @@
 				"metadata": {
 					"microsoft": {
 						"language": "python"
-					}
+					},
+					"collapsed": false
 				},
 				"source": [
 					"%%pyspark\n",
-					"df = spark.sql(\"SELECT * FROM `nyctaxi`.`trip`\")\n",
-					"# df.show(10)"
+					"df = spark.sql(\"SELECT * FROM `nyctaxi`.`trip` LIMIT 100\")\n",
+					"display(df)"
 				],
 				"execution_count": 1
 			},
@@ -152,6 +153,71 @@
 					"df.write.partitionBy(\"Year\",\"Month\",\"Day\").save(\"abfss://users@sasynapsedevuks1.dfs.core.windows.net/test/output4/\")"
 				],
 				"execution_count": 7
+			},
+			{
+				"cell_type": "code",
+				"metadata": {
+					"jupyter": {
+						"source_hidden": false,
+						"outputs_hidden": false
+					},
+					"nteract": {
+						"transient": {
+							"deleting": false
+						}
+					},
+					"microsoft": {
+						"language": "scala"
+					}
+				},
+				"source": [
+					"%%spark\r\n",
+					"// Define connection:\r\n",
+					"Class.forName(\"com.microsoft.sqlserver.jdbc.SQLServerDriver\")\r\n",
+					"\r\n",
+					"val hostname = \"ws-synapse-dev-uks-1-ondemand.sql.azuresynapse.net\"\r\n",
+					"val port = 1433\r\n",
+					"val database = \"DataExplorationDB\" // If needed, change the database \r\n",
+					"val jdbcUrl = s\"jdbc:sqlserver://${hostname}:${port};database=${database}\"\r\n",
+					"//val jdbcUrl = s\"jdbc:sqlserver://${hostname}:${port};database=${database};encrypt=true;trustServerCertificate=true;hostNameInCertificate=*.sql.azuresynapse.net;loginTimeout=30;Authentication=ActiveDirectoryIntegrated\"\r\n",
+					"\r\n",
+					"// Define connection properties:\r\n",
+					"import java.util.Properties\r\n",
+					"\r\n",
+					"val props = new Properties()\r\n",
+					"props.put(\"user\", \"sqladminuser\")\r\n",
+					"props.put(\"password\", \"URjkjQ84G@acTmhB\")\r\n",
+					"\r\n",
+					"// Assign driver to connection:\r\n",
+					"val driverClass = \"com.microsoft.sqlserver.jdbc.SQLServerDriver\"\r\n",
+					"props.setProperty(\"Driver\", driverClass)\r\n",
+					"\r\n",
+					""
+				],
+				"execution_count": 23
+			},
+			{
+				"cell_type": "code",
+				"metadata": {
+					"jupyter": {
+						"source_hidden": false,
+						"outputs_hidden": false
+					},
+					"nteract": {
+						"transient": {
+							"deleting": false
+						}
+					},
+					"microsoft": {
+						"language": "scala"
+					}
+				},
+				"source": [
+					"%%spark\r\n",
+					"val objects = spark.read.jdbc(jdbcUrl, \"(SELECT TOP 10 * FROM dbo.Taxi) res\", props)\r\n",
+					"objects.show(10)"
+				],
+				"execution_count": 24
 			}
 		]
 	}
