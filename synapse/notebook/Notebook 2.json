@@ -1,0 +1,235 @@
+{
+	"name": "Notebook 2",
+	"properties": {
+		"nbformat": 4,
+		"nbformat_minor": 2,
+		"bigDataPool": {
+			"referenceName": "spkruntime31",
+			"type": "BigDataPoolReference"
+		},
+		"sessionProperties": {
+			"driverMemory": "28g",
+			"driverCores": 4,
+			"executorMemory": "28g",
+			"executorCores": 4,
+			"numExecutors": 1,
+			"conf": {
+				"spark.dynamicAllocation.enabled": "false",
+				"spark.dynamicAllocation.minExecutors": "1",
+				"spark.dynamicAllocation.maxExecutors": "1",
+				"spark.autotune.trackingId": "57abbdea-bcd5-42e7-ac4b-36224d441d4d"
+			}
+		},
+		"metadata": {
+			"saveOutput": true,
+			"enableDebugMode": false,
+			"kernelspec": {
+				"name": "synapse_spark",
+				"display_name": "Synapse Spark"
+			},
+			"language_info": {
+				"name": "sql"
+			},
+			"a365ComputeOptions": {
+				"id": "/subscriptions/55536dc5-9813-4408-94ca-828f31382219/resourceGroups/rg-synapse-dev-uks-1/providers/Microsoft.Synapse/workspaces/ws-synapse-dev-uks-1/bigDataPools/spkruntime31",
+				"name": "spkruntime31",
+				"type": "Spark",
+				"endpoint": "https://ws-synapse-dev-uks-1.dev.azuresynapse.net/livyApi/versions/2019-11-01-preview/sparkPools/spkruntime31",
+				"auth": {
+					"type": "AAD",
+					"authResource": "https://dev.azuresynapse.net"
+				},
+				"sparkVersion": "3.1",
+				"nodeCount": 3,
+				"cores": 4,
+				"memory": 28,
+				"automaticScaleJobs": false
+			},
+			"sessionKeepAliveTimeout": 30
+		},
+		"cells": [
+			{
+				"cell_type": "code",
+				"source": [
+					"val data = Array(1,2,3,4,5)\r\n",
+					"val dist = sc.parallelize(data)"
+				],
+				"execution_count": 2
+			},
+			{
+				"cell_type": "code",
+				"metadata": {
+					"jupyter": {
+						"source_hidden": false,
+						"outputs_hidden": false
+					},
+					"nteract": {
+						"transient": {
+							"deleting": false
+						}
+					}
+				},
+				"source": [
+					"dist.count()"
+				],
+				"execution_count": 3
+			},
+			{
+				"cell_type": "code",
+				"metadata": {
+					"jupyter": {
+						"source_hidden": false,
+						"outputs_hidden": false
+					},
+					"nteract": {
+						"transient": {
+							"deleting": false
+						}
+					}
+				},
+				"source": [
+					"val df = dist.toDF()"
+				],
+				"execution_count": 5
+			},
+			{
+				"cell_type": "code",
+				"metadata": {
+					"jupyter": {
+						"source_hidden": false,
+						"outputs_hidden": false
+					},
+					"nteract": {
+						"transient": {
+							"deleting": false
+						}
+					}
+				},
+				"source": [
+					"df.show()"
+				],
+				"execution_count": 6
+			},
+			{
+				"cell_type": "code",
+				"metadata": {
+					"jupyter": {
+						"source_hidden": false,
+						"outputs_hidden": false
+					},
+					"nteract": {
+						"transient": {
+							"deleting": false
+						}
+					},
+					"collapsed": false
+				},
+				"source": [
+					"from pyspark.sql import SparkSession\r\n",
+					"from pyspark.sql.types import *\r\n",
+					"\r\n",
+					"adls_path = 'abfss://users@sasynapsedevuks1.dfs.core.windows.net/Log.csv'\r\n",
+					"\r\n",
+					"df1 = spark.read.option('header', 'true') \\\r\n",
+					"                .option('delimiter', ',') \\\r\n",
+					"                .csv(adls_path)\r\n",
+					"\r\n",
+					"display(df1)\r\n",
+					""
+				],
+				"execution_count": 8
+			},
+			{
+				"cell_type": "code",
+				"metadata": {
+					"jupyter": {
+						"source_hidden": false,
+						"outputs_hidden": false
+					},
+					"nteract": {
+						"transient": {
+							"deleting": false
+						}
+					},
+					"collapsed": false
+				},
+				"source": [
+					"# The Spark groupBy function is used to collect identical data and segregate them into groups\r\n",
+					"# Then you can perform aggregation on the grouped data\r\n",
+					"\r\n",
+					"from pyspark.sql.functions import *\r\n",
+					"\r\n",
+					"# .agg is a method that can be used to perform aggregation based on a column of data\r\n",
+					"# .orderBy helps to order by a particular column\r\n",
+					"newdf=(df1.groupBy(\"Operationname\")\r\n",
+					"     .agg(count(\"Correlationid\").alias(\"Total operations\"))\r\n",
+					"     .orderBy(col(\"Total operations\").desc()))\r\n",
+					"\r\n",
+					"display(newdf)"
+				],
+				"execution_count": 9
+			},
+			{
+				"cell_type": "code",
+				"metadata": {
+					"jupyter": {
+						"source_hidden": false,
+						"outputs_hidden": false
+					},
+					"nteract": {
+						"transient": {
+							"deleting": false
+						}
+					},
+					"collapsed": false
+				},
+				"source": [
+					"filterdf=newdf.filter(col(\"Operationname\").isNotNull())\r\n",
+					"display(filterdf)"
+				],
+				"execution_count": 10
+			},
+			{
+				"cell_type": "code",
+				"metadata": {
+					"jupyter": {
+						"source_hidden": false,
+						"outputs_hidden": false
+					},
+					"nteract": {
+						"transient": {
+							"deleting": false
+						}
+					},
+					"collapsed": false
+				},
+				"source": [
+					"df1.createOrReplaceTempView(\"logdata\")\r\n",
+					"\r\n",
+					"sql_df = spark.sql(\"SELECT * FROM logdata\")\r\n",
+					"display(sql_df)"
+				],
+				"execution_count": 14
+			},
+			{
+				"cell_type": "code",
+				"metadata": {
+					"jupyter": {
+						"source_hidden": false,
+						"outputs_hidden": false
+					},
+					"nteract": {
+						"transient": {
+							"deleting": false
+						}
+					},
+					"collapsed": false
+				},
+				"source": [
+					"SELECT * FROM logdata"
+				],
+				"execution_count": 15
+			}
+		]
+	}
+}
