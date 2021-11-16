@@ -17,7 +17,7 @@
 				"spark.dynamicAllocation.enabled": "false",
 				"spark.dynamicAllocation.minExecutors": "1",
 				"spark.dynamicAllocation.maxExecutors": "1",
-				"spark.autotune.trackingId": "bc0c190e-9a95-4dde-b4c2-11fe7e84a9f7"
+				"spark.autotune.trackingId": "35fbfd10-9a65-423a-98f7-78f3044f93cb"
 			}
 		},
 		"metadata": {
@@ -72,7 +72,7 @@
 				"source": [
 					"dist.count()"
 				],
-				"execution_count": 3
+				"execution_count": 2
 			},
 			{
 				"cell_type": "code",
@@ -90,7 +90,7 @@
 				"source": [
 					"val df = dist.toDF()"
 				],
-				"execution_count": 5
+				"execution_count": 3
 			},
 			{
 				"cell_type": "code",
@@ -108,7 +108,7 @@
 				"source": [
 					"df.show()"
 				],
-				"execution_count": 6
+				"execution_count": 4
 			},
 			{
 				"cell_type": "code",
@@ -141,7 +141,7 @@
 					"display(df1)\r\n",
 					""
 				],
-				"execution_count": 8
+				"execution_count": 5
 			},
 			{
 				"cell_type": "code",
@@ -176,7 +176,7 @@
 					"\r\n",
 					"display(newdf)"
 				],
-				"execution_count": 9
+				"execution_count": 6
 			},
 			{
 				"cell_type": "code",
@@ -200,7 +200,7 @@
 					"filterdf=newdf.filter(col(\"Operationname\").isNotNull())\r\n",
 					"display(filterdf)"
 				],
-				"execution_count": 10
+				"execution_count": 7
 			},
 			{
 				"cell_type": "code",
@@ -226,7 +226,7 @@
 					"sql_df = spark.sql(\"SELECT * FROM logdata\")\r\n",
 					"display(sql_df)"
 				],
-				"execution_count": 14
+				"execution_count": 8
 			},
 			{
 				"cell_type": "code",
@@ -249,7 +249,53 @@
 					"%%sql\r\n",
 					"SELECT * FROM logdata"
 				],
-				"execution_count": 15
+				"execution_count": 9
+			},
+			{
+				"cell_type": "code",
+				"metadata": {
+					"jupyter": {
+						"source_hidden": false,
+						"outputs_hidden": false
+					},
+					"nteract": {
+						"transient": {
+							"deleting": false
+						}
+					},
+					"microsoft": {
+						"language": "python"
+					}
+				},
+				"source": [
+					"%%pyspark\r\n",
+					"spark.sql(\"CREATE DATABASE IF NOT EXISTS logdb\")\r\n",
+					"df1.write.mode(\"overwrite\").saveAsTable(\"logdb.logdata\")"
+				],
+				"execution_count": 13
+			},
+			{
+				"cell_type": "code",
+				"metadata": {
+					"jupyter": {
+						"source_hidden": false,
+						"outputs_hidden": false
+					},
+					"nteract": {
+						"transient": {
+							"deleting": false
+						}
+					},
+					"microsoft": {
+						"language": "sparksql"
+					},
+					"collapsed": false
+				},
+				"source": [
+					"%%sql\r\n",
+					"SELECT * FROM logdb.logdata LIMIT 100"
+				],
+				"execution_count": 14
 			}
 		]
 	}
