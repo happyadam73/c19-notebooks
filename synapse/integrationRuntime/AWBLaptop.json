@@ -1,0 +1,6 @@
+{
+	"name": "AWBLaptop",
+	"properties": {
+		"type": "SelfHosted"
+	}
+}
