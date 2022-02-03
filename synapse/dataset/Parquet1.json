@@ -1,0 +1,85 @@
+{
+	"name": "Parquet1",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "AzureDataLakeStorage2",
+			"type": "LinkedServiceReference"
+		},
+		"annotations": [],
+		"type": "Parquet",
+		"typeProperties": {
+			"location": {
+				"type": "AzureBlobFSLocation",
+				"folderPath": "c19.db/ltla",
+				"fileSystem": "raw"
+			},
+			"compressionCodec": "snappy"
+		},
+		"schema": [
+			{
+				"name": "area_type",
+				"type": "UTF8"
+			},
+			{
+				"name": "area_name",
+				"type": "UTF8"
+			},
+			{
+				"name": "area_code",
+				"type": "UTF8"
+			},
+			{
+				"name": "date",
+				"type": "INT96"
+			},
+			{
+				"name": "new_cases_by_publish_date",
+				"type": "DOUBLE"
+			},
+			{
+				"name": "cum_cases_by_publish_date",
+				"type": "DOUBLE"
+			},
+			{
+				"name": "cum_cases_by_publish_date_rate",
+				"type": "DOUBLE"
+			},
+			{
+				"name": "new_cases_by_specimen_date",
+				"type": "DOUBLE"
+			},
+			{
+				"name": "cum_cases_by_specimen_date",
+				"type": "DOUBLE"
+			},
+			{
+				"name": "cum_cases_by_specimen_date_rate",
+				"type": "DOUBLE"
+			},
+			{
+				"name": "new_deaths_28_days_by_publish_date",
+				"type": "DOUBLE"
+			},
+			{
+				"name": "cum_deaths_28_days_by_publish_date",
+				"type": "DOUBLE"
+			},
+			{
+				"name": "cum_deaths_28_days_by_publish_date_rate",
+				"type": "DOUBLE"
+			},
+			{
+				"name": "new_deaths_28_days_by_death_date",
+				"type": "DOUBLE"
+			},
+			{
+				"name": "cum_deaths_28_days_by_death_date",
+				"type": "DOUBLE"
+			},
+			{
+				"name": "cum_deaths_28_days_by_death_date_rate",
+				"type": "DOUBLE"
+			}
+		]
+	}
+}
