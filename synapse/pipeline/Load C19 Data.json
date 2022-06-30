@@ -15,10 +15,6 @@
 				},
 				"userProperties": [],
 				"typeProperties": {
-					"notebook": {
-						"referenceName": "COVID 19 Data Viz using Azure Synapse - Part 1 - Extract and Load the Data",
-						"type": "NotebookReference"
-					},
 					"snapshot": true
 				}
 			}
